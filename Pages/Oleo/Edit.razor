@@ -1,0 +1,100 @@
+﻿@page "/oleo/edit/{id:int}"
+
+@inject NavigationManager NavigationManager
+@inject IOleoService oleoService
+@inject IWebHostEnvironment Env
+
+<h2>Editar Perfil</h2>
+
+<Alerta Exibir="Exibir">
+    <h3>@Mensagem</h3>
+</Alerta>
+
+<form>
+    <div class="row">
+        <div class="col-md-8">
+            <div class="form-group">
+                <label class="control-label">Nome</label>
+                <input class="form-control" @bind="@oleo.Nome" />
+            </div>
+            <div class="form-group">
+                <label class="control-label">Normalizado</label>
+                <input class="form-control" @bind="@oleo.TipoOleo" disabled />
+            </div>            
+        </div>
+    </div>
+    <div class="row">
+        <div class="form-group">
+            <input type="button" class="btn btn-primary" @onclick="@UpdateOleo" value="Atualizar" />
+            <input type="button" class="btn" @onclick="@Cancel" value="Cancelar" />
+        </div>
+    </div>
+</form>
+
+@code {
+    bool Exibir = false;
+
+    [Parameter]
+    public string Mensagem { get; set; }
+
+    Oleo oleo = new Oleo();
+
+    [Parameter]
+    public int id { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            oleo = await oleoService.GetOleo(id);
+        }
+        catch (Exception ex)
+        {
+
+            Exibir = true;
+            if (Env.IsDevelopment())
+            {
+                Mensagem = "Erro ao acessar os dados ...\n" + ex.StackTrace.ToString();
+            }
+            else
+            {
+                Mensagem = "Não foi possível ao acessar os dados do perfil do usuário ...";
+            }
+        }
+    }
+
+    void Cancel()
+    {
+        NavigationManager.NavigateTo("oleo");
+    }
+
+    protected async Task UpdateOleo()
+    {
+        try
+        {
+            bool resultado = await oleoService.EditarOleo(id, oleo);
+            if (!resultado)
+            {
+                Exibir = true;
+                Mensagem = "Já existe Oleo cadastrado com este Nome";
+            }
+            else
+            {
+                NavigationManager.NavigateTo("oleo");
+            }
+        }
+        catch (Exception ex)
+        {
+            Exibir = true;
+            if (Env.IsDevelopment())
+            {
+                Mensagem = "Erro ao atualizar os dados ...\n" + ex.StackTrace.ToString();
+            }
+            else
+            {
+                Mensagem = "Não foi possível ao editar os dados dos perfis do usuário ...";
+            }
+        }
+    }
+
+}

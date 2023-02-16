@@ -1,0 +1,110 @@
+﻿@page "/oleo"
+@inject IOleoService oleoService
+
+<h3>Oleos Cadastrados</h3>
+
+<Alerta Exibir=Exibir>
+    <h3>@Mensagem</h3>
+</Alerta>
+
+<div>
+    <a class="btn btn-success" href="oleo/create">Cadastrar Oleo</a>
+</div>
+<hr />
+
+@if (oleos == null)
+{
+    <p><em>Carregando...</em></p>
+}
+else if (oleos.Count == 0)
+{
+    <p><em>Não existem categorias cadastradas...</em></p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Nome</th>
+                <th>Tipo Oleo</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var oleo in oleos)
+            {
+                <tr>
+                    <td>@oleo.Nome</td>
+                    <td>@oleo.TipoOleo</td>
+                    <td><a class="btn btn-primary" href="/editoleo/@oleo.OleoId">Editar</a> </td>
+                    <td><a class="btn btn-danger" @onclick="@(() => DeletaOleo(oleo.OleoId))" style="color:white">Deletar</a> </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+    <hr />
+
+    <Confirma @ref="confirma" onCancela="@CancelaConfirma" onConfirma="@DeletaConfirma">
+        <div>Deseja realmente excluir este item?</div>
+    </Confirma>
+}
+
+
+@code {
+    List<Oleo>? oleos { get; set; }
+
+    Confirma? confirma;
+
+    int codigoOleo;
+
+    bool Exibir = false;
+
+    [Parameter]
+    public string Mensagem { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await CarregaOleo();
+    }
+
+    async Task CarregaOleo()
+    {
+        try
+        {
+            oleos = await oleoService.GetOleos();
+        }
+        catch (Exception ex)
+        {
+            Exibir = true;
+            Mensagem = "Erro ao carregar dados dos veiculos cadastrados " + ex.StackTrace;
+            throw;            
+        }
+    }
+
+    void DeletaOleo(int oleoId)
+    {
+        confirma.Exibir();
+        codigoOleo = oleoId;
+    }
+
+    async Task DeletaConfirma()
+    {
+        try
+        {
+            await oleoService.DeleteOleo(codigoOleo);
+            confirma.Ocultar();
+            await CarregaOleo();
+        }
+        catch (Exception ex)
+        {
+            Exibir = true;
+            Mensagem = "Não foi possivel fazer excluir o item..." + ex.StackTrace;
+            throw;
+        }
+
+    }
+
+    void CancelaConfirma()
+    {
+        confirma.Ocultar();
+    }
+}

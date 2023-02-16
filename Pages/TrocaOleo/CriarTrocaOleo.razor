@@ -1,0 +1,182 @@
+﻿@page "/trocaoleo/create"
+@inject ITrocaOleoService trocaOleoService
+@inject IVeiculoService veiculoService
+@inject IOleoService oleoService
+@inject IFiltroService filtroService
+@inject NavigationManager navigation
+
+<h3>Cadastrar nova TrocaOleo</h3>
+
+<EditForm Model="@trocaOleo" OnValidSubmit="@CadastrarTrocaOleo">
+    <DataAnnotationsValidator />
+    <div class="row">
+        <div class="col-md-12">
+            <div class="form-group">
+                <label form="veiculo">Veiculo</label>
+                @*Utiliza o metodo Onchange para quando o usuario selecionar a categoria, atribui o CategoriaId ao respectivo ProdutoId.*@
+                <select @onchange="VeiculoSelectionChanged" class="form-control text-uppercase">
+                    @if (veiculos != null)
+                    {
+                        @foreach (var veiculo in veiculos)
+                        {
+                            @*A propriedade selected retorna um boleano, que exibe como primeira opcao oque foi selecionado 
+                            para a tag select.*@
+                            <option value="@veiculo.VeiculoId" selected="@(veiculo.VeiculoId == trocaOleo.VeiculoId ? true : false)">
+                                @veiculo.Modelo
+                            </option>
+                        }
+                    }
+                </select>
+            </div>
+            <div class="form-group mt-1">
+                <label form="oleo">Oleo</label>
+                @*Utiliza o metodo Onchange para quando o usuario selecionar a categoria, atribui o CategoriaId ao respectivo ProdutoId.*@
+                <select @onchange="OleoSelectionChanged" class="form-control text-uppercase">
+                    @if (oleos != null)
+                    {
+                        @foreach (var oleo in oleos)
+                        {
+                            <option value="@oleo.OleoId" selected="@(oleo.OleoId == trocaOleo.OleoId ? true : false)">
+                                @oleo.Nome
+                            </option>
+                        }
+                    }
+                </select>
+            </div>
+            <div class="form-group mt-1">
+                <label form="filtro">Filtro</label>
+                @*Utiliza o metodo Onchange para quando o usuario selecionar a categoria, atribui o CategoriaId ao respectivo ProdutoId.*@
+                <select @onchange="FiltroSelectionChanged" class="form-control text-uppercase">
+                    @if (filtros != null)
+                    {
+                        @foreach (var filtro in filtros)
+                        {
+                            <option value="@filtro.FiltroId" selected="@(filtro.FiltroId == trocaOleo.FiltroId ? true : false)">
+                                @filtro.Nome
+                            </option>
+                        }
+                    }
+                </select>
+            </div>
+            <div class="form-group">
+                <label form="kmAtual">Km Atual: </label>
+                <div>
+                    <InputNumber @bind-Value="trocaOleo.KmAtual" class="form-control" disable />
+                    <ValidationMessage For="@(()=> trocaOleo.KmAtual)" />
+                </div>
+            </div>
+            <div class="form-group">
+                <label form="kmProximaTroca">Km Proxima Troca: </label>
+                <div>
+                    <InputNumber @bind-Value="trocaOleo.KmProximaTroca" class="form-control " />
+                    <ValidationMessage For="@(()=> trocaOleo.KmProximaTroca)" />
+                </div>
+            </div>
+            <div class="form-group">
+                <label form="quantidadeOleo">Quantidade de Oleo Troca: </label>
+                <div>
+                    <InputNumber @bind-Value="trocaOleo.QuantidadeOleo" class="form-control" />
+                    <ValidationMessage For="@(()=> trocaOleo.QuantidadeOleo)" />
+                </div>
+            </div>
+            <div class="form-group">
+                <label form="dataTrocaOleo">Data da troca de oleo: </label>
+                <div>
+                    <InputDate @bind-Value="trocaOleo.DataTroca" class="form-control" />
+                    <ValidationMessage For="@(()=> trocaOleo.DataTroca)" />
+                </div>
+            </div>
+            <div class="form-group">
+                <label form="dataProximaTrocaOleo">Data da proxima troca de oleo: </label>
+                <div>
+                    <InputDate @bind-Value="trocaOleo.DataProximaTroca" class="form-control" />
+                    <ValidationMessage For="@(()=> trocaOleo.DataProximaTroca)" />
+                </div>
+            </div>
+            <br />
+            <div class="row mt-6">
+                <div class="col-md-4">
+                    <button type="submit" class="btn btn-success">
+                        Salvar
+                    </button>
+                    <button type="submit" class="btn btn-danger"
+                            @onclick="@(()=> navigation.NavigateTo("/trocaoleo"))">
+                        Cancelar
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</EditForm>
+
+@code {
+    private TrocaOleo trocaOleo = new TrocaOleo();
+    List<Veiculo> veiculos;
+    List<Oleo> oleos;
+    List<Filtro> filtros;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await CarregaVeiculos();
+        await CarregaOleos();
+        await CarregaFiltros();
+    }
+
+    private async Task CarregaVeiculos()
+    {
+        veiculos = await veiculoService.GetVeiculos();
+    }
+
+    private async Task CarregaOleos()
+    {
+        oleos = await oleoService.GetOleos();
+    }
+
+    private async Task CarregaFiltros()
+    {
+        filtros = await filtroService.GetFiltros();
+    }
+
+    async Task CadastrarTrocaOleo()
+    {
+        try
+        {
+            await trocaOleoService.CreateTrocaOleo(trocaOleo);
+            navigation.NavigateTo("trocaoleo");
+        }
+        catch (Exception)
+        {
+
+            throw;
+        }
+    }
+
+    void Cancel()
+    {
+        navigation.NavigateTo("trocaoleo");
+    }
+
+    void VeiculoSelectionChanged(ChangeEventArgs e)
+    {
+        if (int.TryParse(e.Value.ToString(), out int id))
+        {
+            trocaOleo.VeiculoId = id;
+        }
+    }
+
+    void OleoSelectionChanged(ChangeEventArgs e)
+    {
+        if (int.TryParse(e.Value.ToString(), out int id))
+        {
+            trocaOleo.OleoId = id;
+        }
+    }
+
+    void FiltroSelectionChanged(ChangeEventArgs e)
+    {
+        if (int.TryParse(e.Value.ToString(), out int id))
+        {
+            trocaOleo.FiltroId = id;
+        }
+    }
+}

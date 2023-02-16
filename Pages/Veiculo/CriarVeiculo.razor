@@ -1,0 +1,25 @@
+﻿@page "/veiculo/create"
+@inject IVeiculoService veiculoService
+@inject NavigationManager navigation
+
+<h2>Cadastrar novo Veiculo</h2>
+
+<VeiculoForm veiculo="veiculo" OnValidSubmit="CadastrarVeiculo"
+             btnTextSubmit="Salvar" btnTextCancelar="Cancelar" Cancela="Cancel">
+
+</VeiculoForm>
+
+@code {
+    private Veiculo veiculo = new Veiculo();
+
+    async  Task CadastrarVeiculo()
+    {
+        await veiculoService.CreateVeiculo(veiculo);
+        navigation.NavigateTo("veiculos");
+    }
+
+    void Cancel()
+    {        
+        navigation.NavigateTo("veiculos");
+    }
+}

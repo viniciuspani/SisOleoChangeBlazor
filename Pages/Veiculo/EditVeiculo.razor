@@ -1,0 +1,62 @@
+﻿@page "/editveiculo/{veiculoId:int}"
+@inject NavigationManager navigation
+@inject IVeiculoService veiculoService
+
+<h2>Editar  Veiculo</h2>
+
+<Alerta Exibir="Exibir">
+    <h3>@Mensagem</h3>
+</Alerta>
+
+<VeiculoForm veiculo="veiculo" OnValidSubmit="EditarVeiculo"
+             btnTextSubmit="Salvar" btnTextCancelar="Cancela" Cancela="Cancel">
+
+</VeiculoForm>
+
+@code {
+    Veiculo veiculo = new Veiculo();
+
+    bool Exibir = false;
+
+    [Parameter]
+    public string Mensagem { get; set; }
+
+    [Parameter]
+    public int veiculoId { get; set; }
+
+    protected override async Task OnParametersSetAsync()
+    {
+        try
+        {
+            veiculo = await veiculoService.GetVeiculo(veiculoId);
+        }
+        catch (Exception ex)
+        {
+            Exibir = true;
+            Mensagem = "Erro ao carregar dados do veiculo - " + ex.StackTrace;
+        }
+    }
+
+    protected async Task EditarVeiculo()
+    {
+        try
+        {
+            bool resultado = await veiculoService.EditarVeiculo(veiculoId, veiculo);
+            if (resultado)
+            {
+                navigation.NavigateTo("veiculos");
+            }
+        }
+        catch (Exception ex)
+        {
+            Exibir = true;
+            Mensagem = "Erro ao atualizar os dados ...\n" + ex.StackTrace.ToString();
+            throw;
+        }
+    }
+
+    void Cancel()
+    {
+        navigation.NavigateTo("veiculos");
+    }
+}

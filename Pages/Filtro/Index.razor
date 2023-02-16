@@ -1,0 +1,109 @@
+﻿@page "/filtro"
+@inject IFiltroService filtroService
+
+<h3>Filtros Cadastrados</h3>
+
+<Alerta Exibir=Exibir>
+    <h3>@Mensagem</h3>
+</Alerta>
+
+<div>
+    <a class="btn btn-success" href="filtro/create">Cadastrar Filtro</a>
+</div>
+<hr />
+
+@if (filtros == null)
+{
+    <p><em>Carregando...</em></p>
+}
+else if (filtros.Count == 0)
+{
+    <p><em>Não existem filtros cadastradas...</em></p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Nome</th>
+                <th>Tipo Filtro</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var filtro in filtros)
+            {
+                <tr>
+                    <td>@filtro.Nome</td>
+                    <td>@filtro.TipoFiltro</td>
+                    <td><a class="btn btn-primary" href="/editf/@filtro.FiltroId">Editar</a> </td>
+                    <td><a class="btn btn-danger" @onclick="@(() => DeletaFiltro(filtro.FiltroId))" style="color:white">Deletar</a> </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+    <hr />
+
+    <Confirma @ref="confirma" onCancela="@CancelaConfirma" onConfirma="@DeletaConfirma">
+        <div>Deseja realmente excluir este item?</div>
+    </Confirma>
+}
+
+
+@code {
+    List<Filtro>? filtros { get; set; }
+
+    Confirma? confirma;
+
+    int codigoFiltro;
+
+    bool Exibir = false;
+
+    [Parameter]
+    public string Mensagem { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await CarregaFiltro();
+    }
+
+    async Task CarregaFiltro()
+    {
+        try
+        {
+            filtros = await filtroService.GetFiltros();
+        }
+        catch (Exception ex)
+        {
+            Exibir = true;
+            Mensagem = "Erro ao carregar dados dos veiculos cadastrados " + ex.StackTrace;
+            throw;
+        }
+    }
+
+    void DeletaFiltro(int filtroId)
+    {
+        confirma.Exibir();
+        codigoFiltro = filtroId;
+    }
+
+    async Task DeletaConfirma()
+    {
+        try
+        {
+            await filtroService.DeleteFiltro(codigoFiltro);
+            confirma.Ocultar();
+            await CarregaFiltro();
+        }
+        catch (Exception ex)
+        {
+            Exibir = true;
+            Mensagem = "Não foi possivel fazer excluir o item..." + ex.StackTrace;
+            throw;
+        }
+    }
+
+    void CancelaConfirma()
+    {
+        confirma.Ocultar();
+    }
+}

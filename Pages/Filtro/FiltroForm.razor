@@ -1,0 +1,54 @@
+﻿<EditForm Model="@filtro" OnValidSubmit="@OnValidSubmit">
+    <DataAnnotationsValidator/>
+    <div class="row">
+        <div class="col-md-12">
+            <div class="form-group">
+                <label form="nome">Nome Filtro: </label>
+                <div>
+                    <InputText @bind-Value="filtro.Nome" class="form-control" />
+                    <ValidationMessage For="@(()=> filtro.Nome)" />
+                </div>
+            </div>
+            <div class="form-group">
+                <label form="fabricante">Fabricante: </label>
+                <div>
+                    <InputText @bind-Value="filtro.TipoFiltro" class="form-control" />
+                    <ValidationMessage For="@(()=> filtro.TipoFiltro)" />
+                </div>
+            </div>
+        </div>
+        <br />
+        <div class="row mt-6">
+            <div class="col-md-4">
+                <button type="submit" class="btn btn-success">
+                    @btnTextSubmit
+                </button>
+                <button type="submit" class="btn btn-danger"
+                        @onclick="@Cancela">
+                    @btnTextCancelar
+                </button>
+            </div>
+        </div>
+    </div>
+</EditForm>
+
+@code {
+    [Inject]
+    public NavigationManager navigation { get; set; }
+
+    [Parameter]
+    public Filtro filtro { get; set; }
+
+    [Parameter]
+    public string btnTextSubmit { get; set; } = "Salvar";
+
+    [Parameter]
+    public string btnTextCancelar { get; set; } = "Cancelar";
+
+    [Parameter]
+    public EventCallback Cancela { get; set; }
+
+    [Parameter]
+    public EventCallback OnValidSubmit { get; set; }
+
+}

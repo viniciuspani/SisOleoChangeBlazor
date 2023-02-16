@@ -1,0 +1,75 @@
+﻿@page "/editoleo/{oleoId:int}"
+@inject NavigationManager navigation
+@inject IOleoService oleoService
+<h3>Editar Oleo</h3>
+
+<Alerta Exibir=Exibir>
+    <h3>@Mensagem</h3>
+</Alerta>
+
+<OleoForm oleo="oleo" OnValidSubmit="EditarOleo"
+    btnTextSubmit="Salvar" btnTextCancelar="Cancelar" Cancela="Cancel">
+
+</OleoForm>
+
+
+@code {
+    Oleo oleo = new Oleo();
+
+    bool Exibir = false;
+
+    [Parameter]
+    public string Mensagem { get; set; }
+
+    [Parameter]
+    public int oleoId { get; set; }
+
+    //public string teste { get; set; }
+
+    //void ValidaSubmit(EditContext editContext)
+    //{
+        
+    //    bool testeValida = editContext.Validate();
+
+    //   teste = testeValida ? "Sucesso formulario valido" : "Falhou formulario invalido";
+    //}
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            oleo = await oleoService.GetOleo(oleoId);
+        }
+        catch (Exception ex)
+        {
+            Exibir = true;
+            Mensagem = "Erro ao carregar dados de oleos cadastrados..." + ex.StackTrace;
+            throw;
+        }        
+    }
+
+    protected async Task EditarOleo()
+    {
+        try
+        {
+
+            bool resultado = await oleoService.EditarOleo(oleoId, oleo);
+            if (resultado)
+            {
+                
+                navigation.NavigateTo("oleo");
+            }
+        }
+        catch (Exception ex)
+        {
+            Exibir = true;
+            Mensagem = "Erro ao atualizar os dados ...\n" + ex.StackTrace.ToString();            
+            throw;
+        }
+    }
+
+    void Cancel()
+    {        
+        navigation.NavigateTo("oleo");
+    }
+}

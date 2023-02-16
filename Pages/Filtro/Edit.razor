@@ -1,0 +1,52 @@
+﻿@page "/editf/{filtroId:int}"
+@inject NavigationManager navigation
+@inject IFiltroService filtroService
+
+<h3>Edite Filtro</h3>
+
+<FiltroForm filtro="filtro" OnValidSubmit="EditarFiltro"
+    btnTextSubmit="Salvar" btnTextCancelar="Cancelar" Cancela="Cancel">
+
+</FiltroForm>
+
+@code {
+    Filtro filtro = new Filtro();
+
+    [Parameter]
+    public int filtroId { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            filtro = await filtroService.GetFiltro(filtroId);
+        }
+        catch (Exception)
+        {
+
+            throw;
+        }
+    }
+
+    protected async Task EditarFiltro()
+    {
+        try
+        {
+            bool result = await filtroService.EditarFiltro(filtroId, filtro);
+            if (result)
+            {
+                navigation.NavigateTo("filtro");
+            }
+        }
+        catch (Exception)
+        {
+
+            throw;
+        }
+    }
+
+    void Cancel()
+    {
+        navigation.NavigateTo("filtro");
+    }
+}

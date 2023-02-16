@@ -1,0 +1,63 @@
+﻿@page "/editfiltro/{filtroId:int}"
+@inject NavigationManager navigation
+@inject IFiltroService filtroService
+<h3>Editar Filtro</h3>
+
+<Alerta Exibir=Exibir>
+    <h3>@Mensagem</h3>
+</Alerta>
+
+<FiltroForm filtro="filtro" OnValidSubmit="EditarFiltro"
+    btnTextSubmit="Salvar" btnTextCancelar="Cancelar" Cancela="Cancel">
+
+</FiltroForm>
+
+
+@code {
+    Filtro filtro = new Filtro();
+
+    bool Exibir = false;
+
+    [Parameter]
+    public string Mensagem { get; set; }
+
+    [Parameter]
+    public int filtroId { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            filtro = await filtroService.GetFiltro(filtroId);
+        }
+        catch (Exception ex)
+        {
+            Exibir = true;
+            Mensagem = "Erro ao carregar dados de oleos cadastrados..." + ex.StackTrace;
+            throw;
+        }        
+    }
+
+    protected async Task EditarFiltro()
+    {
+        try
+        {
+            bool resultado = await filtroService.EditarFiltro(filtroId, filtro);
+            if (resultado)
+            {
+                navigation.NavigateTo("filtro");
+            }
+        }
+        catch (Exception ex)
+        {
+            Exibir = true;
+            Mensagem = "Erro ao atualizar os dados ...\n" + ex.StackTrace.ToString();
+            throw;
+        }
+    }
+
+    void Cancel()
+    {
+        navigation.NavigateTo("filtro");
+    }
+}

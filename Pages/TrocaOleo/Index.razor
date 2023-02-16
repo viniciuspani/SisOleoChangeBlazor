@@ -1,0 +1,131 @@
+﻿@page "/trocaoleo"
+@inject ITrocaOleoService trocaOleoService
+
+<h3>Troca de Oleos Cadastrados</h3>
+
+<Alerta Exibir=Exibir>
+    <h3>@Mensagem</h3>
+</Alerta>
+
+<div>
+    <a class="btn btn-success" href="trocaoleo/create">Cadastrar Nova Troca de Oleo</a>
+</div>
+<hr />
+
+@if (trocaOleos == null)
+{
+    <p><em>Carregando...</em></p>
+}
+else if (trocaOleos.Count == 0)
+{
+    <p><em>Não existem troca de oleos cadastradas...</em></p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Veiculo</th>
+                <th>Oleo</th>
+                <th>Filtro</th>
+                <th>Km Atual</th>
+                <th>Km Proxima Troca</th>
+                <th>Quantidade Oleo</th>
+                <th>Data da Troca</th>
+                <th>Data Proxima Troca</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var trocaOleo in trocaOleos)
+            {
+                if (veiculos != null && oleos !=null && filtros != null)
+                {
+                    <tr>
+                        <td value="@trocaOleo.TrocaOleoId" selected="@(trocaOleo.TrocaOleoId == veiculos.VeiculoId ? true : false)">@veiculos.Modelo</td>
+                        <td value="@trocaOleo.TrocaOleoId" selected="@(trocaOleo.TrocaOleoId == oleos.OleoId ? true : false)">@oleos.Nome</td>
+                        <td value="@trocaOleo.TrocaOleoId" selected="@(trocaOleo.TrocaOleoId == filtros.FiltroId ? true : false)">@filtros.Nome</td>
+                        <td>@trocaOleo.KmAtual</td>
+                        <td>@trocaOleo.KmProximaTroca</td>
+                        <td>@trocaOleo.QuantidadeOleo</td>
+                        <td>@trocaOleo.DataTroca</td>
+                        <td>@trocaOleo.DataProximaTroca</td>
+                        <td><a class="btn btn-primary" @*href="/editveiculo/@trocaOleo.TrocaOleoId"*@>Editar</a> </td>
+                        <td><a class="btn btn-danger" @*@onclick="@(() => DeletaVeiculo(trocaOleo.TrocaOleoId))"*@ style="color:white">Deletar</a> </td>
+                    </tr>
+
+                }
+                
+            }
+        </tbody>
+    </table>
+    <hr />
+
+    <Confirma @ref="confirma" onCancela="@CancelaConfirma" onConfirma="@DeletaConfirma">
+        <div>Deseja realmente excluir este item?</div>
+    </Confirma>
+}
+
+@code {
+    List<TrocaOleo> trocaOleos { get; set; }
+    public Veiculo veiculos { get; set; }
+    public Oleo oleos { get; set; }
+    public Filtro filtros { get; set; }    
+
+    Confirma? confirma;
+
+    int codigoTrocaOleo;
+
+    bool Exibir = false;
+
+    [Parameter]
+    public string Mensagem { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await CarregaTrocaOleos();
+    }
+
+    async Task CarregaTrocaOleos()
+    {
+        try
+        {
+            trocaOleos = await trocaOleoService.GetTrocaOleos();
+        }
+        catch (Exception ex)
+        {
+            Exibir = true;
+            Mensagem = "Erro ao carregar dados dos veiculos cadastrados " + ex.StackTrace;
+            throw;
+        }
+    }
+
+    void DeletaTroca(int trocaID)
+    {
+        confirma.Exibir();
+        codigoTrocaOleo = trocaID;
+    }
+
+
+    async Task DeletaConfirma()
+    {
+        try
+        {
+            await trocaOleoService.DeleteTrocaOleo(codigoTrocaOleo);
+            confirma.Ocultar();
+            await CarregaTrocaOleos();
+        }
+        catch (Exception ex)
+        {
+            Exibir = true;
+            Mensagem = "Não foi possivel fazer excluir o item..." + ex.StackTrace;
+            throw;
+        }
+    }
+
+    void CancelaConfirma()
+    {
+        confirma.Ocultar();
+    }
+
+}
+

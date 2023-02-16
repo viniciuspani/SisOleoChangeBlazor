@@ -1,0 +1,25 @@
+﻿@page "/filtro/create"
+@inject IFiltroService filtroService
+@inject NavigationManager navigation
+
+<h3>Cadastrar novo Filtro</h3>
+
+<FiltroForm filtro="filtro" OnValidSubmit="CadastrarFiltro"
+    btnTextSubmit="Salvar" btnTextCancelar="Cancelar" Cancela="Cancel">
+
+</FiltroForm>
+
+@code {
+    private Filtro filtro = new Filtro();
+
+    async Task CadastrarFiltro()
+    {
+        await filtroService.CreateFiltro(filtro);
+       navigation.NavigateTo("filtro");
+    }
+
+    void Cancel()
+    {
+        navigation.NavigateTo("filtro");
+    }
+}

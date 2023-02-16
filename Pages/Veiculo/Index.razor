@@ -1,0 +1,116 @@
+﻿@page "/veiculos"
+@inject IVeiculoService veiculoService
+
+<h3>Veiculos Cadastrados</h3>
+
+<Alerta Exibir=Exibir>
+    <h3>@Mensagem</h3>
+</Alerta>
+
+<div>
+    <a class="btn btn-success" href="veiculo/create">Cadastrar Veiculo</a>
+</div>
+<hr />
+
+@if (veiculos == null)
+{
+    <p><em>Carregando...</em></p>
+}
+else if (veiculos.Count == 0)
+{
+    <p><em>Não existem categorias cadastradas...</em></p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Modelo</th>
+                <th>Fabricante</th>
+                <th>Ano</th>
+                <th>Tipo Veiculo</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var veiculo in veiculos)
+            {
+                <tr>
+                    <td class="text-uppercase">@veiculo.Modelo</td>
+                    <td class="text-uppercase">@veiculo.Fabricante</td>
+                    <td>@veiculo.AnoFabricacao</td>
+                    <td class="text-uppercase">@veiculo.TipoVeiculo</td>
+                    <td><a class="btn btn-primary" href="/editveiculo/@veiculo.VeiculoId">Editar</a> </td>
+                    <td><a class="btn btn-danger" @onclick="@(() => DeletaVeiculo(veiculo.VeiculoId))" style="color:white">Deletar</a> </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+    <hr />
+
+    <Confirma @ref="confirma" onCancela="@CancelaConfirma" onConfirma="@DeletaConfirma">
+        <div>Deseja realmente excluir este item?</div>
+    </Confirma>
+}
+
+@code {
+    List<Veiculo> veiculos { get; set; }
+
+    Confirma? confirma;
+
+    int codigoVeiculo;
+
+    bool Exibir = false;
+
+    [Parameter]
+    public string Mensagem { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await CarregaVeiculos();
+    }
+
+    async Task CarregaVeiculos()
+    {
+        try
+        {
+            veiculos = await veiculoService.GetVeiculos();
+        }
+        catch (Exception ex)
+        {
+            Exibir = true;
+            Mensagem = "Erro ao carregar dados dos veiculos cadastrados " + ex.StackTrace;
+            throw;
+        }
+    }
+
+    void DeletaVeiculo(int veiculoId)
+    {
+        confirma.Exibir();
+        codigoVeiculo = veiculoId;
+    }
+
+
+    async Task DeletaConfirma()
+    {
+        try
+        {
+            await veiculoService.DeleteVeiculo(codigoVeiculo);
+            confirma.Ocultar();
+            await CarregaVeiculos();
+        }
+        catch (Exception ex)
+        {
+            Exibir = true;
+            Mensagem = "Não foi possivel fazer excluir o item..." + ex.StackTrace;
+            throw;
+        }
+
+
+    }
+
+    void CancelaConfirma()
+    {
+        confirma.Ocultar();
+    }
+
+}
