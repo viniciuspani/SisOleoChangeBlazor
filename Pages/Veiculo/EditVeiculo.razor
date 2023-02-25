@@ -9,7 +9,7 @@
 </Alerta>
 
 <VeiculoForm veiculo="veiculo" OnValidSubmit="EditarVeiculo"
-             btnTextSubmit="Salvar" btnTextCancelar="Cancela" Cancela="Cancel">
+             btnTextSubmit="Salvar" btnTextCancelar="Cancela" Cancela="Cancel" >
 
 </VeiculoForm>
 
@@ -24,7 +24,9 @@
     [Parameter]
     public int veiculoId { get; set; }
 
-    protected override async Task OnParametersSetAsync()
+    
+
+    protected override async Task OnInitializedAsync()
     {
         try
         {

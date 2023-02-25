@@ -99,9 +99,11 @@
                     <button type="submit" class="btn btn-success">
                         Salvar
                     </button>
-                    <button type="submit" class="btn btn-danger"
-                            @onclick="@(()=> navigation.NavigateTo("/trocaoleo"))">
-                        Cancelar
+                    @*<div>
+                        <a class="btn btn-danger" href="/trocaoleo">Teste</a>
+                    </div>*@
+                    <button type="button" >
+                        <a class="btn btn-danger" href="/trocaoleo">Teste</a>
                     </button>
                 </div>
             </div>
@@ -114,6 +116,8 @@
     List<Veiculo> veiculos;
     List<Oleo> oleos;
     List<Filtro> filtros;
+
+    //private CancellationTokenSource source = new CancellationTokenSource();
 
     protected override async Task OnInitializedAsync()
     {

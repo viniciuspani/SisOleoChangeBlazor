@@ -1,5 +1,6 @@
 ﻿@page "/veiculos"
 @inject IVeiculoService veiculoService
+@inherits OwningComponentBase
 
 <h3>Veiculos Cadastrados</h3>
 
@@ -64,6 +65,8 @@ else
     [Parameter]
     public string Mensagem { get; set; }
 
+    private IVeiculoService veiculoService1 { get; set; }
+
     protected override async Task OnInitializedAsync()
     {
         await CarregaVeiculos();
@@ -73,7 +76,9 @@ else
     {
         try
         {
-            veiculos = await veiculoService.GetVeiculos();
+            //veiculos = await veiculoService.GetVeiculos();
+            veiculoService1 = ScopedServices.GetRequiredService<IVeiculoService>();
+            veiculos = await veiculoService1.GetVeiculos();
         }
         catch (Exception ex)
         {
@@ -104,13 +109,10 @@ else
             Mensagem = "Não foi possivel fazer excluir o item..." + ex.StackTrace;
             throw;
         }
-
-
     }
 
     void CancelaConfirma()
     {
         confirma.Ocultar();
     }
-
 }

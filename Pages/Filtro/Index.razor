@@ -1,5 +1,6 @@
 ﻿@page "/filtro"
 @inject IFiltroService filtroService
+@inherits OwningComponentBase
 
 <h3>Filtros Cadastrados</h3>
 
@@ -61,6 +62,8 @@ else
     [Parameter]
     public string Mensagem { get; set; }
 
+    private IFiltroService filtroService1 { get; set; }
+
     protected override async Task OnInitializedAsync()
     {
         await CarregaFiltro();
@@ -70,7 +73,9 @@ else
     {
         try
         {
-            filtros = await filtroService.GetFiltros();
+            //filtros = await filtroService.GetFiltros();
+            filtroService1 = ScopedServices.GetRequiredService<IFiltroService>();
+            filtros = await filtroService1.GetFiltros();
         }
         catch (Exception ex)
         {

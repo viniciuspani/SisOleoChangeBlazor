@@ -1,5 +1,6 @@
 ﻿@page "/oleo"
 @inject IOleoService oleoService
+@inherits OwningComponentBase
 
 <h3>Oleos Cadastrados</h3>
 
@@ -61,16 +62,19 @@ else
     [Parameter]
     public string Mensagem { get; set; }
 
+    private IOleoService? oleoService1 { get; set; }
+
     protected override async Task OnInitializedAsync()
     {
-        await CarregaOleo();
+        await CarregaOleo();        
     }
 
     async Task CarregaOleo()
     {
         try
-        {
-            oleos = await oleoService.GetOleos();
+        {            
+            oleoService1 = ScopedServices.GetRequiredService<IOleoService>();
+            oleos = await oleoService1.GetOleos();
         }
         catch (Exception ex)
         {
@@ -106,5 +110,5 @@ else
     void CancelaConfirma()
     {
         confirma.Ocultar();
-    }
+    }   
 }
