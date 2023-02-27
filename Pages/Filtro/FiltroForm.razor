@@ -5,14 +5,14 @@
             <div class="form-group">
                 <label form="nome">Nome Filtro: </label>
                 <div>
-                    <InputText @bind-Value="filtro.Nome" class="form-control" />
+                    <InputText @bind-Value="filtro.Nome" class="form-control text-uppercase" />
                     <ValidationMessage For="@(()=> filtro.Nome)" />
                 </div>
             </div>
             <div class="form-group">
                 <label form="fabricante">Fabricante: </label>
                 <div>
-                    <InputText @bind-Value="filtro.TipoFiltro" class="form-control" />
+                    <InputText @bind-Value="filtro.TipoFiltro" class="form-control text-uppercase" />
                     <ValidationMessage For="@(()=> filtro.TipoFiltro)" />
                 </div>
             </div>

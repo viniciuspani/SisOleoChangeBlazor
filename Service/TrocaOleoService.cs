@@ -79,7 +79,7 @@ namespace SisOleoChangeBlazor.Service
         {
             try
             {
-                return await _context.TrocaOleos.ToListAsync();
+                return await _context.TrocaOleos.AsNoTracking().ToListAsync();
             }
             catch (Exception)
             {

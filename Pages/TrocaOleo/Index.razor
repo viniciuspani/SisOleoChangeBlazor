@@ -1,5 +1,8 @@
 ﻿@page "/trocaoleo"
 @inject ITrocaOleoService trocaOleoService
+@inject IVeiculoService veiculoService
+@inject IOleoService oleoService
+@inject IFiltroService filtroService
 
 <h3>Troca de Oleos Cadastrados</h3>
 
@@ -38,12 +41,12 @@ else
         <tbody>
             @foreach (var trocaOleo in trocaOleos)
             {
-                if (veiculos != null && oleos !=null && filtros != null)
+                if (veiculo != null && oleo !=null && filtro != null)
                 {
                     <tr>
-                        <td value="@trocaOleo.TrocaOleoId" selected="@(trocaOleo.TrocaOleoId == veiculos.VeiculoId ? true : false)">@veiculos.Modelo</td>
-                        <td value="@trocaOleo.TrocaOleoId" selected="@(trocaOleo.TrocaOleoId == oleos.OleoId ? true : false)">@oleos.Nome</td>
-                        <td value="@trocaOleo.TrocaOleoId" selected="@(trocaOleo.TrocaOleoId == filtros.FiltroId ? true : false)">@filtros.Nome</td>
+                        <td value="@trocaOleo.TrocaOleoId" selected="@(trocaOleo.TrocaOleoId == veiculo.VeiculoId ? true : false)">@veiculo.Modelo.ToUpper()</td>
+                        <td value="@trocaOleo.TrocaOleoId" selected="@(trocaOleo.TrocaOleoId == oleo.OleoId ? true : false)">@oleo.Nome.ToUpper()</td>
+                        <td value="@trocaOleo.TrocaOleoId" selected="@(trocaOleo.TrocaOleoId == filtro.FiltroId ? true : false)">@filtro.Nome.ToUpper()</td>
                         <td>@trocaOleo.KmAtual</td>
                         <td>@trocaOleo.KmProximaTroca</td>
                         <td>@trocaOleo.QuantidadeOleo</td>
@@ -66,10 +69,10 @@ else
 }
 
 @code {
-    List<TrocaOleo> trocaOleos { get; set; }
-    public Veiculo veiculos { get; set; }
-    public Oleo oleos { get; set; }
-    public Filtro filtros { get; set; }    
+    List<TrocaOleo> trocaOleos { get; set; }   
+    Oleo oleo = new Oleo();
+    Filtro filtro = new Filtro();
+    Veiculo veiculo = new Veiculo();
 
     Confirma? confirma;
 
@@ -83,6 +86,9 @@ else
     protected override async Task OnInitializedAsync()
     {
         await CarregaTrocaOleos();
+        await CarregaVeiculos();
+        await CarregaOleos();
+        await CarregaFiltros();
     }
 
     async Task CarregaTrocaOleos()
@@ -99,12 +105,50 @@ else
         }
     }
 
+    private async Task<Veiculo> CarregaVeiculos()
+    {
+        List<Veiculo> veiculos;
+        veiculos = await veiculoService.GetVeiculos();       
+
+        foreach(var vec in veiculos)
+        {
+            veiculo.VeiculoId = vec.VeiculoId;
+            veiculo.Modelo = vec.Modelo;
+        }
+        return veiculo;
+    }
+
+    private async Task<Oleo> CarregaOleos()
+    {
+        List<Oleo> oleos;
+        oleos = await oleoService.GetOleos();  
+        foreach (var ol in oleos)
+        {
+            oleo.OleoId = ol.OleoId;
+            oleo.Nome = ol.Nome;
+        }
+        return oleo;
+
+    }
+
+    private async Task<Filtro> CarregaFiltros()
+    {
+        List<Filtro> filtros;
+        filtros = await filtroService.GetFiltros();
+
+        foreach(var fil in filtros)
+        {
+            filtro.FiltroId = fil.FiltroId;
+            filtro.Nome = fil.Nome;
+        }
+        return filtro;
+    }
+
     void DeletaTroca(int trocaID)
     {
         confirma.Exibir();
         codigoTrocaOleo = trocaID;
     }
-
 
     async Task DeletaConfirma()
     {

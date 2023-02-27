@@ -34,8 +34,8 @@ else
             @foreach (var filtro in filtros)
             {
                 <tr>
-                    <td>@filtro.Nome</td>
-                    <td>@filtro.TipoFiltro</td>
+                    <td>@filtro.Nome.ToUpper()</td>
+                    <td>@filtro.TipoFiltro.ToUpper()</td>
                     <td><a class="btn btn-primary" href="/editf/@filtro.FiltroId">Editar</a> </td>
                     <td><a class="btn btn-danger" @onclick="@(() => DeletaFiltro(filtro.FiltroId))" style="color:white">Deletar</a> </td>
                 </tr>

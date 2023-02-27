@@ -14,7 +14,7 @@
             <div class="form-group">
                 <label form="veiculo">Veiculo</label>
                 @*Utiliza o metodo Onchange para quando o usuario selecionar a categoria, atribui o CategoriaId ao respectivo ProdutoId.*@
-                <select @onchange="VeiculoSelectionChanged" class="form-control text-uppercase">
+                <select @onchange="VeiculoSelectionChanged" class="form-control ">
                     @if (veiculos != null)
                     {
                         @foreach (var veiculo in veiculos)
@@ -22,7 +22,7 @@
                             @*A propriedade selected retorna um boleano, que exibe como primeira opcao oque foi selecionado 
                             para a tag select.*@
                             <option value="@veiculo.VeiculoId" selected="@(veiculo.VeiculoId == trocaOleo.VeiculoId ? true : false)">
-                                @veiculo.Modelo
+                                @veiculo.Modelo.ToUpper()
                             </option>
                         }
                     }
@@ -31,13 +31,13 @@
             <div class="form-group mt-1">
                 <label form="oleo">Oleo</label>
                 @*Utiliza o metodo Onchange para quando o usuario selecionar a categoria, atribui o CategoriaId ao respectivo ProdutoId.*@
-                <select @onchange="OleoSelectionChanged" class="form-control text-uppercase">
+                <select @onchange="OleoSelectionChanged" class="form-control">
                     @if (oleos != null)
                     {
                         @foreach (var oleo in oleos)
                         {
                             <option value="@oleo.OleoId" selected="@(oleo.OleoId == trocaOleo.OleoId ? true : false)">
-                                @oleo.Nome
+                                @oleo.Nome.ToUpper()
                             </option>
                         }
                     }
@@ -52,7 +52,7 @@
                         @foreach (var filtro in filtros)
                         {
                             <option value="@filtro.FiltroId" selected="@(filtro.FiltroId == trocaOleo.FiltroId ? true : false)">
-                                @filtro.Nome
+                                @filtro.Nome.ToUpper()
                             </option>
                         }
                     }
