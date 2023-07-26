@@ -9,5 +9,7 @@ namespace SisOleoChangeBlazor.Interface
         Task<Oleo> CreateOleo(Oleo oleo);
         Task<bool> DeleteOleo(int id);
         Task<bool> EditarOleo(int id, Oleo oleo);
+
+        Task<List<Oleo>> GetTrocaOleoOl(int id);
     }
 }

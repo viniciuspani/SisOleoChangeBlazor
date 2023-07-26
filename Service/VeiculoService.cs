@@ -90,6 +90,19 @@ namespace SisOleoChangeBlazor.Service
             }
         }
 
-        
+        public async Task<List<Veiculo>> GetTrocaOleoVec(int id)
+        {
+            try
+            {
+                return await _context.Veiculos.Where(t => t.VeiculoId == id).ToListAsync();
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }
+
+
     }
 }

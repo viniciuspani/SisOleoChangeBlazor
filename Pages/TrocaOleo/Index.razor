@@ -44,9 +44,9 @@ else
                 if (veiculo != null && oleo !=null && filtro != null)
                 {
                     <tr>
-                        <td value="@trocaOleo.TrocaOleoId" selected="@(trocaOleo.TrocaOleoId == veiculo.VeiculoId ? true : false)">@veiculo.Modelo.ToUpper()</td>
-                        <td value="@trocaOleo.TrocaOleoId" selected="@(trocaOleo.TrocaOleoId == oleo.OleoId ? true : false)">@oleo.Nome.ToUpper()</td>
-                        <td value="@trocaOleo.TrocaOleoId" selected="@(trocaOleo.TrocaOleoId == filtro.FiltroId ? true : false)">@filtro.Nome.ToUpper()</td>
+                        @*<td value="@trocaOleo.VeiculoId" selected="@(trocaOleo.VeiculoId == veiculo.VeiculoId ? true : false)">@veiculo.Modelo.ToUpper()</td>*@
+                        @*<td value="@trocaOleo.OleoId" selected="@(trocaOleo.OleoId == oleo.OleoId ? true : false)">@oleo.Nome.ToUpper()</td>*@
+                        @*<td value="@trocaOleo.FiltroId" selected="@(trocaOleo.FiltroId == filtro.FiltroId ? true : false)">@filtro.Nome.ToUpper()</td>*@
                         <td>@trocaOleo.KmAtual</td>
                         <td>@trocaOleo.KmProximaTroca</td>
                         <td>@trocaOleo.QuantidadeOleo</td>
@@ -69,16 +69,22 @@ else
 }
 
 @code {
-    List<TrocaOleo> trocaOleos { get; set; }   
+    List<TrocaOleo> trocaOleos { get; set; }
+
+    private int codigoTrocaVec;
+    private int codigoTrocaOl;
+    private int codigoTrocaFil;
+
+    private int testeVec;
+
     Oleo oleo = new Oleo();
     Filtro filtro = new Filtro();
     Veiculo veiculo = new Veiculo();
 
-    Confirma? confirma;
+    Confirma? confirma;   
+    bool Exibir = false;
 
     int codigoTrocaOleo;
-
-    bool Exibir = false;
 
     [Parameter]
     public string Mensagem { get; set; }
@@ -88,14 +94,27 @@ else
         await CarregaTrocaOleos();
         await CarregaVeiculos();
         await CarregaOleos();
-        await CarregaFiltros();
+        //await CarregaFiltros();
     }
 
     async Task CarregaTrocaOleos()
     {
         try
         {
+
             trocaOleos = await trocaOleoService.GetTrocaOleos();
+            if (codigoTrocaVec == 0 || codigoTrocaOl == 0 || codigoTrocaFil == 0)
+            {
+                codigoTrocaVec = trocaOleos[0].VeiculoId;
+                codigoTrocaOl = trocaOleos[0].OleoId;
+
+                foreach (var troca in trocaOleos)
+                {
+                    codigoTrocaVec = troca.VeiculoId;
+                    await veiculoService.GetTrocaOleoVec(codigoTrocaVec);
+                }
+            }
+
         }
         catch (Exception ex)
         {
@@ -108,25 +127,29 @@ else
     private async Task<Veiculo> CarregaVeiculos()
     {
         List<Veiculo> veiculos;
-        veiculos = await veiculoService.GetVeiculos();       
+        veiculos = await veiculoService.GetTrocaOleoVec(codigoTrocaVec);
 
-        foreach(var vec in veiculos)
+        foreach (var vec in veiculos)
         {
             veiculo.VeiculoId = vec.VeiculoId;
             veiculo.Modelo = vec.Modelo;
         }
+        StateHasChanged();
+
         return veiculo;
     }
 
     private async Task<Oleo> CarregaOleos()
     {
         List<Oleo> oleos;
-        oleos = await oleoService.GetOleos();  
+        oleos = await oleoService.GetTrocaOleoOl(codigoTrocaOl);
         foreach (var ol in oleos)
         {
             oleo.OleoId = ol.OleoId;
             oleo.Nome = ol.Nome;
         }
+        StateHasChanged();
+        
         return oleo;
 
     }
