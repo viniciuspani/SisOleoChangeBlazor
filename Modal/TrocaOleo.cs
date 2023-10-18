@@ -10,10 +10,11 @@ namespace SisOleoChangeBlazor.Modal
         public int TrocaOleoId { get; set; }
 
         public int VeiculoId { get; set; }
-
+        public Veiculo Veiculo { get; set; }  // Propriedade de navegação
         public int OleoId { get; set; }
-
+        public Oleo Oleo { get; set; }  // Propriedade de navegação
         public int FiltroId { get; set; }
+        public Filtro Filtro { get; set; }  // Propriedade de navegação
 
         [Column(TypeName = "decimal(18,2)")]
         [Required(ErrorMessage ="Informe a quilometragem atual.")]
@@ -30,6 +31,13 @@ namespace SisOleoChangeBlazor.Modal
         [Required(ErrorMessage = "Informe a data da troca de oleo.")]
         public DateTime DataTroca = DateTime.Now;
 
+        //Fazer validação para a dataProximaTroca seja maior que a DataTroca
         public DateTime? DataProximaTroca { get; set; }
+
+        public override string ToString()
+        {
+            return $"TrocaOleoId: {TrocaOleoId}, Veiculo: {Veiculo.Modelo}, Oleo: {Oleo.Nome}, Filtro: {Filtro.Nome}, Data da Troca: {DataTroca}";
+        }
+
     }
 }

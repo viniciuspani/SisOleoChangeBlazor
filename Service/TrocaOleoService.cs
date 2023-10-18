@@ -88,6 +88,13 @@ namespace SisOleoChangeBlazor.Service
             }
         }
 
-        
+        public async Task<List<TrocaOleo>> GetTrocaOleosList()
+        {
+            return await _context.TrocaOleos
+                .Include(t => t.Veiculo)
+                .Include(t => t.Oleo)
+                .Include(t => t.Filtro)
+                .ToListAsync();
+        }
     }
 }

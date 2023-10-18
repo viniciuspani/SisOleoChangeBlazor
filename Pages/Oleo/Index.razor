@@ -40,13 +40,15 @@ else
                     <td><a class="btn btn-danger" @onclick="@(() => DeletaOleo(oleo.OleoId))" style="color:white">Deletar</a> </td>
                 </tr>
             }
+            <Confirma @ref="confirma" onCancela="@CancelaConfirma" onConfirma="@DeletaConfirma">
+                <div>Deseja realmente excluir este item?</div>
+            </Confirma>
         </tbody>
+        
     </table>
     <hr />
 
-    <Confirma @ref="confirma" onCancela="@CancelaConfirma" onConfirma="@DeletaConfirma">
-        <div>Deseja realmente excluir este item?</div>
-    </Confirma>
+ 
 }
 
 

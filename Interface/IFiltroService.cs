@@ -9,5 +9,7 @@ namespace SisOleoChangeBlazor.Interface
         Task<Filtro> CreateFiltro(Filtro filtro);
         Task<bool> DeleteFiltro(int id);
         Task<bool> EditarFiltro(int id, Filtro filtro);
+
+        Task<List<Filtro>> GetTrocaOleoFiltro(int id);
     }
 }

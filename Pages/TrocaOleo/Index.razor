@@ -6,10 +6,6 @@
 
 <h3>Troca de Oleos Cadastrados</h3>
 
-<Alerta Exibir=Exibir>
-    <h3>@Mensagem</h3>
-</Alerta>
-
 <div>
     <a class="btn btn-success" href="trocaoleo/create">Cadastrar Nova Troca de Oleo</a>
 </div>
@@ -21,7 +17,9 @@
 }
 else if (trocaOleos.Count == 0)
 {
-    <p><em>Não existem troca de oleos cadastradas...</em></p>
+    <Alerta Exibir=Exibir>
+        <h3>@Mensagem</h3>
+    </Alerta>
 }
 else
 {
@@ -40,24 +38,17 @@ else
         </thead>
         <tbody>
             @foreach (var trocaOleo in trocaOleos)
-            {
-                if (veiculo != null && oleo !=null && filtro != null)
-                {
-                    <tr>
-                        @*<td value="@trocaOleo.VeiculoId" selected="@(trocaOleo.VeiculoId == veiculo.VeiculoId ? true : false)">@veiculo.Modelo.ToUpper()</td>*@
-                        @*<td value="@trocaOleo.OleoId" selected="@(trocaOleo.OleoId == oleo.OleoId ? true : false)">@oleo.Nome.ToUpper()</td>*@
-                        @*<td value="@trocaOleo.FiltroId" selected="@(trocaOleo.FiltroId == filtro.FiltroId ? true : false)">@filtro.Nome.ToUpper()</td>*@
-                        <td>@trocaOleo.KmAtual</td>
-                        <td>@trocaOleo.KmProximaTroca</td>
-                        <td>@trocaOleo.QuantidadeOleo</td>
-                        <td>@trocaOleo.DataTroca</td>
-                        <td>@trocaOleo.DataProximaTroca</td>
-                        <td><a class="btn btn-primary" @*href="/editveiculo/@trocaOleo.TrocaOleoId"*@>Editar</a> </td>
-                        <td><a class="btn btn-danger" @*@onclick="@(() => DeletaVeiculo(trocaOleo.TrocaOleoId))"*@ style="color:white">Deletar</a> </td>
-                    </tr>
-
-                }
-                
+            {                
+                <tr>
+                    <td>@trocaOleo.Veiculo.Modelo</td>
+                    <td>@trocaOleo.Oleo.Nome</td>
+                    <td>@trocaOleo.Filtro.Nome</td>
+                    <td>@trocaOleo.KmAtual</td>
+                    <td>@trocaOleo.KmProximaTroca</td>
+                    <td>@trocaOleo.QuantidadeOleo</td>
+                    <td>@trocaOleo.DataTroca.ToString("dd/MM/yyyy")</td>
+                    <td>@trocaOleo.DataProximaTroca?.ToString("dd/MM/yyyy")</td>
+                </tr>                
             }
         </tbody>
     </table>
@@ -70,12 +61,6 @@ else
 
 @code {
     List<TrocaOleo> trocaOleos { get; set; }
-
-    private int codigoTrocaVec;
-    private int codigoTrocaOl;
-    private int codigoTrocaFil;
-
-    private int testeVec;
 
     Oleo oleo = new Oleo();
     Filtro filtro = new Filtro();
@@ -92,9 +77,6 @@ else
     protected override async Task OnInitializedAsync()
     {
         await CarregaTrocaOleos();
-        await CarregaVeiculos();
-        await CarregaOleos();
-        //await CarregaFiltros();
     }
 
     async Task CarregaTrocaOleos()
@@ -102,19 +84,13 @@ else
         try
         {
 
-            trocaOleos = await trocaOleoService.GetTrocaOleos();
-            if (codigoTrocaVec == 0 || codigoTrocaOl == 0 || codigoTrocaFil == 0)
+            trocaOleos = await trocaOleoService.GetTrocaOleosList();
+            if (trocaOleos == null)
             {
-                codigoTrocaVec = trocaOleos[0].VeiculoId;
-                codigoTrocaOl = trocaOleos[0].OleoId;
-
-                foreach (var troca in trocaOleos)
-                {
-                    codigoTrocaVec = troca.VeiculoId;
-                    await veiculoService.GetTrocaOleoVec(codigoTrocaVec);
-                }
-            }
-
+                Exibir = true;
+                Mensagem = "Não há troca de oleos cadastradas ";
+            }           
+                
         }
         catch (Exception ex)
         {
@@ -122,55 +98,6 @@ else
             Mensagem = "Erro ao carregar dados dos veiculos cadastrados " + ex.StackTrace;
             throw;
         }
-    }
-
-    private async Task<Veiculo> CarregaVeiculos()
-    {
-        List<Veiculo> veiculos;
-        veiculos = await veiculoService.GetTrocaOleoVec(codigoTrocaVec);
-
-        foreach (var vec in veiculos)
-        {
-            veiculo.VeiculoId = vec.VeiculoId;
-            veiculo.Modelo = vec.Modelo;
-        }
-        StateHasChanged();
-
-        return veiculo;
-    }
-
-    private async Task<Oleo> CarregaOleos()
-    {
-        List<Oleo> oleos;
-        oleos = await oleoService.GetTrocaOleoOl(codigoTrocaOl);
-        foreach (var ol in oleos)
-        {
-            oleo.OleoId = ol.OleoId;
-            oleo.Nome = ol.Nome;
-        }
-        StateHasChanged();
-        
-        return oleo;
-
-    }
-
-    private async Task<Filtro> CarregaFiltros()
-    {
-        List<Filtro> filtros;
-        filtros = await filtroService.GetFiltros();
-
-        foreach(var fil in filtros)
-        {
-            filtro.FiltroId = fil.FiltroId;
-            filtro.Nome = fil.Nome;
-        }
-        return filtro;
-    }
-
-    void DeletaTroca(int trocaID)
-    {
-        confirma.Exibir();
-        codigoTrocaOleo = trocaID;
     }
 
     async Task DeletaConfirma()

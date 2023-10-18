@@ -23,6 +23,7 @@
                             <option value="@veiculo.VeiculoId" selected="@(veiculo.VeiculoId == trocaOleo.VeiculoId ? true : false)">
                                 @veiculo.Modelo.ToUpper()
                             </option>
+                            @* idVeiculo = veiculo.VeiculoId; *@
                         }
                     }
                 </select>
@@ -37,22 +38,25 @@
                             <option value="@oleo.OleoId" selected="@(oleo.OleoId == trocaOleo.OleoId ? true : false)">
                                 @oleo.Nome.ToUpper()
                             </option>
+                            @* idOleo = oleo.OleoId; *@
                         }
                     }
                 </select>
             </div>
             <div class="form-group mt-1">
                 <label form="filtro">Filtro</label>                
-                <select @*@onchange="FiltroSelectionChanged"*@ class="form-control text-uppercase">
-                    @*@if (filtros != null)
+                <select @onchange="FiltroSelectionChanged" class="form-control text-uppercase">
+                    @if (filtros != null)
                     {
                         @foreach (var filtro in filtros)
                         {
                             <option value="@filtro.FiltroId" selected="@(filtro.FiltroId == trocaOleo.FiltroId ? true : false)">
                                 @filtro.Nome.ToUpper()
+                                
                             </option>
+                           @* idFiltro = filtro.FiltroId; *@
                         }
-                    }*@
+                    }
                 </select>
             </div>
             <div class="form-group">
@@ -100,7 +104,7 @@
                         <a class="btn btn-danger" href="/trocaoleo">Teste</a>
                     </div>*@
                     <button type="button" >
-                        <a class="btn btn-danger" href="/trocaoleo">Teste</a>
+                        <a class="btn btn-danger" href="/trocaoleo">Cancelar</a>
                     </button>
                 </div>
             </div>
@@ -112,7 +116,11 @@
     private TrocaOleo trocaOleo = new TrocaOleo();
     List<Veiculo> veiculos;
     List<Oleo> oleos;
-    //List<Filtro> filtros;
+    List<Filtro> filtros;
+
+    private int idFiltro;
+    private int idVeiculo;
+    private int idOleo;
 
     //private CancellationTokenSource source = new CancellationTokenSource();
 
@@ -120,7 +128,7 @@
     {
         await CarregaVeiculos();
         await CarregaOleos();
-        //await CarregaFiltros();
+        await CarregaFiltros();
     }
 
     private async Task CarregaVeiculos()
@@ -133,10 +141,10 @@
         oleos = await oleoService.GetOleos();
     }
 
-    //private async Task CarregaFiltros()
-    //{
-    //    filtros = await filtroService.GetFiltros();
-    //}
+    private async Task CarregaFiltros()
+    {
+        filtros = await filtroService.GetFiltros();
+    }
 
     async Task CadastrarTrocaOleo()
     {
@@ -159,25 +167,34 @@
 
     void VeiculoSelectionChanged(ChangeEventArgs e)
     {
-        if (int.TryParse(e.Value.ToString(), out int id))
-        {
-            trocaOleo.VeiculoId = id;
-        }
+        // if (int.TryParse(e.Value.ToString(), out int id))
+        // {
+        //     trocaOleo.VeiculoId = id;
+        // }
+        // trocaOleo.VeiculoId = idVeiculo;
+
+        trocaOleo.VeiculoId = Convert.ToInt32(e.Value.ToString());
     }
 
     void OleoSelectionChanged(ChangeEventArgs e)
     {
-        if (int.TryParse(e.Value.ToString(), out int id))
-        {
-            trocaOleo.OleoId = id;
-        }
+        // if (int.TryParse(e.Value.ToString(), out int id))
+        // {
+        //     trocaOleo.OleoId = id;
+        // }
+        // trocaOleo.OleoId = idOleo;
+
+        trocaOleo.OleoId = Convert.ToInt32(e.Value.ToString());
     }
 
-    //void FiltroSelectionChanged(ChangeEventArgs e)
-    //{
-    //    if (int.TryParse(e.Value.ToString(), out int id))
-    //    {
-    //        trocaOleo.FiltroId = id;
-    //    }
-    //}
+    void FiltroSelectionChanged(ChangeEventArgs e)
+    {
+        // if (int.TryParse(e.Value.ToString(), out int id))
+        // {
+        //     trocaOleo.FiltroId = id;
+        // }
+        // trocaOleo.FiltroId = idFiltro;
+
+        trocaOleo.FiltroId = Convert.ToInt32(e.Value.ToString());
+    }
 }

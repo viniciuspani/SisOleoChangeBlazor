@@ -86,5 +86,18 @@ namespace SisOleoChangeBlazor.Service
                 throw;
             }
         }
+
+        public async Task<List<Filtro>> GetTrocaOleoFiltro(int id)
+        {
+            try
+            {
+                return await _context.Filtros.Where(t => t.FiltroId == id).ToListAsync();
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }       
     }
 }
