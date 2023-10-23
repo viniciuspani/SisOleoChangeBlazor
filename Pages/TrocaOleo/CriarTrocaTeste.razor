@@ -1,0 +1,64 @@
+﻿@page "/trocaoleo/create"
+@inject ITrocaOleoService trocaOleoService
+@inject IVeiculoService veiculoService
+@inject IOleoService oleoService
+@inject IFiltroService filtroService
+@inject NavigationManager navigation
+
+<h3>Criar Troca Teste</h3>
+
+<TrocaOleoForm trocaOleo="trocaOleo" veiculos="veiculos" oleos="oleos" filtros="filtros" OnValidSubmit="CadastrarTrocaOleo"
+               btnTextSubmit="Salvar" btnTextCancelar="Cancelar" Cancela="Cancel">
+
+</TrocaOleoForm>
+
+@code {
+    private TrocaOleo trocaOleo = new TrocaOleo();
+    List<Veiculo> veiculos;
+    List<Oleo> oleos;
+    List<Filtro> filtros;
+
+    private EventCallback<ChangeEventArgs> _myEventCallback;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await CarregaVeiculos();
+        await CarregaOleos();
+        await CarregaFiltros();
+    }
+
+    private async Task CarregaVeiculos()
+    {
+        veiculos = await veiculoService.GetVeiculos();
+    }
+
+    private async Task CarregaOleos()
+    {
+        oleos = await oleoService.GetOleos();
+    }
+
+    private async Task CarregaFiltros()
+    {
+        filtros = await filtroService.GetFiltros();
+    }
+
+    async Task CadastrarTrocaOleo()
+    {
+        try
+        {
+            await trocaOleoService.CreateTrocaOleo(trocaOleo);
+            navigation.NavigateTo("trocaoleo");
+        }
+        catch (Exception)
+        {
+
+            throw;
+        }
+    }
+
+    void Cancel()
+    {
+        navigation.NavigateTo("/trocaoleo");
+    }
+    
+}

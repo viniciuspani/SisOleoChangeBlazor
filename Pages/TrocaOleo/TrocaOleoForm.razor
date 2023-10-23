@@ -1,19 +1,10 @@
-﻿@page "/trocaoleo/create"
-@inject ITrocaOleoService trocaOleoService
-@inject IVeiculoService veiculoService
-@inject IOleoService oleoService
-@inject IFiltroService filtroService
-@* @inject NavigationManager navigation *@
-
-<h3>Cadastrar nova TrocaOleo</h3>
-
-<EditForm Model="@trocaOleo" OnValidSubmit="@OnValidSubmit">
+﻿<EditForm Model="@trocaOleo" OnValidSubmit="@OnValidSubmit">
     <DataAnnotationsValidator />
     <div class="row">
         <div class="col-md-12">
             <div class="form-group">
                 <label form="veiculo">Veiculo</label>
-                <select @onchange="OnchangesVeciculo" class="form-control ">
+                <select @onchange="VeiculoSelectionChanged" class="form-control ">
                     @if (veiculos != null)
                     {
                         @foreach (var veiculo in veiculos)
@@ -29,7 +20,7 @@
             </div>
             <div class="form-group mt-1">
                 <label form="oleo">Oleo</label>
-                <select @onchange="OnchangesOleo" class="form-control">
+                <select @onchange="OleoSelectionChanged" class="form-control">
                     @if (oleos != null)
                     {
                         @foreach (var oleo in oleos)
@@ -43,7 +34,7 @@
             </div>
             <div class="form-group mt-1">
                 <label form="filtro">Filtro</label>
-                <select @onchange="OnchangesFiltro" class="form-control text-uppercase">
+                <select @onchange="FiltroSelectionChanged" class="form-control text-uppercase">
                     @if (filtros != null)
                     {
                         @foreach (var filtro in filtros)
@@ -110,6 +101,7 @@
 @code {
     [Inject]
     public NavigationManager navigation { get; set; }
+
     [Parameter]
     public TrocaOleo trocaOleo { get; set; }
 
@@ -132,14 +124,20 @@
     public EventCallback Cancela { get; set; }
 
     [Parameter]
-    public EventCallback OnchangesVeciculo { get; set; }
-
-    [Parameter]
-    public EventCallback OnchangesOleo { get; set; }
-
-    [Parameter]
-    public EventCallback OnchangesFiltro { get; set; }
-
-    [Parameter]
     public EventCallback OnValidSubmit { get; set; }
+
+   private void VeiculoSelectionChanged(ChangeEventArgs e)
+    {
+        trocaOleo.VeiculoId = Convert.ToInt32(e.Value.ToString());
+    }
+
+    private void OleoSelectionChanged(ChangeEventArgs e)
+    {
+        trocaOleo.OleoId = Convert.ToInt32(e.Value.ToString());
+    }
+
+    private void FiltroSelectionChanged(ChangeEventArgs e)
+    {
+        trocaOleo.FiltroId = Convert.ToInt32(e.Value.ToString());
+    }
 }

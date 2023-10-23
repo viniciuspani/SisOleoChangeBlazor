@@ -1,4 +1,4 @@
-﻿@page "/trocaoleo/create"
+﻿@* @page "/trocaoleo/create" *@
 @inject ITrocaOleoService trocaOleoService
 @inject IVeiculoService veiculoService
 @inject IOleoService oleoService
@@ -115,9 +115,6 @@
     List<Oleo> oleos;
     List<Filtro> filtros;
 
-    private int idFiltro;
-    private int idVeiculo;
-    private int idOleo;
 
     //private CancellationTokenSource source = new CancellationTokenSource();
 
