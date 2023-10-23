@@ -3,23 +3,23 @@
 @inject IVeiculoService veiculoService
 @inject IOleoService oleoService
 @inject IFiltroService filtroService
-@inject NavigationManager navigation
+@* @inject NavigationManager navigation *@
 
 <h3>Cadastrar nova TrocaOleo</h3>
 
-<EditForm Model="@trocaOleo" OnValidSubmit="@CadastrarTrocaOleo">
+<EditForm Model="@trocaOleo" OnValidSubmit="@OnValidSubmit">
     <DataAnnotationsValidator />
     <div class="row">
         <div class="col-md-12">
             <div class="form-group">
-                <label form="veiculo">Veiculo</label>                
-                <select @onchange="VeiculoSelectionChanged" class="form-control ">
+                <label form="veiculo">Veiculo</label>
+                <select @onchange="OnchangesVeciculo" class="form-control ">
                     @if (veiculos != null)
                     {
                         @foreach (var veiculo in veiculos)
                         {
-                            @*A propriedade selected retorna um boleano, que exibe como primeira opcao oque foi selecionado 
-                            para a tag select.*@
+                            @*A propriedade selected retorna um boleano, que exibe como primeira opcao oque foi selecionado
+                    para a tag select.*@
                             <option value="@veiculo.VeiculoId" selected="@(veiculo.VeiculoId == trocaOleo.VeiculoId ? true : false)">
                                 @veiculo.Modelo.ToUpper()
                             </option>
@@ -28,8 +28,8 @@
                 </select>
             </div>
             <div class="form-group mt-1">
-                <label form="oleo">Oleo</label>                
-                <select @onchange="OleoSelectionChanged" class="form-control">
+                <label form="oleo">Oleo</label>
+                <select @onchange="OnchangesOleo" class="form-control">
                     @if (oleos != null)
                     {
                         @foreach (var oleo in oleos)
@@ -42,15 +42,15 @@
                 </select>
             </div>
             <div class="form-group mt-1">
-                <label form="filtro">Filtro</label>                
-                <select @onchange="FiltroSelectionChanged" class="form-control text-uppercase">
+                <label form="filtro">Filtro</label>
+                <select @onchange="OnchangesFiltro" class="form-control text-uppercase">
                     @if (filtros != null)
                     {
                         @foreach (var filtro in filtros)
                         {
                             <option value="@filtro.FiltroId" selected="@(filtro.FiltroId == trocaOleo.FiltroId ? true : false)">
                                 @filtro.Nome.ToUpper()
-                                
+
                             </option>
                         }
                     }
@@ -95,13 +95,11 @@
             <div class="row mt-6">
                 <div class="col-md-4">
                     <button type="submit" class="btn btn-success">
-                        Salvar
+                        @btnTextSubmit
                     </button>
-                    @*<div>
-                        <a class="btn btn-danger" href="/trocaoleo">Teste</a>
-                    </div>*@
-                    <button type="button" >
-                        <a class="btn btn-danger" href="/trocaoleo">Cancelar</a>
+                    <button type="submit" class="btn btn-danger"
+                    @onclick="@Cancela">
+                        @btnTextCancelar
                     </button>
                 </div>
             </div>
@@ -110,70 +108,38 @@
 </EditForm>
 
 @code {
-    private TrocaOleo trocaOleo = new TrocaOleo();
-    List<Veiculo> veiculos;
-    List<Oleo> oleos;
-    List<Filtro> filtros;
+    [Inject]
+    public NavigationManager navigation { get; set; }
+    [Parameter]
+    public TrocaOleo trocaOleo { get; set; }
 
-    private int idFiltro;
-    private int idVeiculo;
-    private int idOleo;
+    [Parameter]
+    public List<Veiculo> veiculos { get; set; }
 
-    //private CancellationTokenSource source = new CancellationTokenSource();
+    [Parameter]
+    public List<Oleo> oleos { get; set; }
 
-    protected override async Task OnInitializedAsync()
-    {
-        await CarregaVeiculos();
-        await CarregaOleos();
-        await CarregaFiltros();
-    }
+    [Parameter]
+    public List<Filtro> filtros { get; set; }
 
-    private async Task CarregaVeiculos()
-    {
-        veiculos = await veiculoService.GetVeiculos();
-    }
+    [Parameter]
+    public string btnTextSubmit { get; set; } = "Salvar";
 
-    private async Task CarregaOleos()
-    {
-        oleos = await oleoService.GetOleos();
-    }
+    [Parameter]
+    public string btnTextCancelar { get; set; } = "Cancelar";
 
-    private async Task CarregaFiltros()
-    {
-        filtros = await filtroService.GetFiltros();
-    }
+    [Parameter]
+    public EventCallback Cancela { get; set; }
 
-    async Task CadastrarTrocaOleo()
-    {
-        try
-        {
-            await trocaOleoService.CreateTrocaOleo(trocaOleo);
-            navigation.NavigateTo("trocaoleo");
-        }
-        catch (Exception)
-        {
+    [Parameter]
+    public EventCallback OnchangesVeciculo { get; set; }
 
-            throw;
-        }
-    }
+    [Parameter]
+    public EventCallback OnchangesOleo { get; set; }
 
-    void Cancel()
-    {
-        navigation.NavigateTo("trocaoleo");
-    }
+    [Parameter]
+    public EventCallback OnchangesFiltro { get; set; }
 
-    void VeiculoSelectionChanged(ChangeEventArgs e)
-    {
-        trocaOleo.VeiculoId = Convert.ToInt32(e.Value.ToString());
-    }
-
-    void OleoSelectionChanged(ChangeEventArgs e)
-    {
-        trocaOleo.OleoId = Convert.ToInt32(e.Value.ToString());
-    }
-
-    void FiltroSelectionChanged(ChangeEventArgs e)
-    {
-        trocaOleo.FiltroId = Convert.ToInt32(e.Value.ToString());
-    }
+    [Parameter]
+    public EventCallback OnValidSubmit { get; set; }
 }
