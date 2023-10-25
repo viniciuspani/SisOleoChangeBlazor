@@ -76,9 +76,9 @@ else
     {
         try
         {
-            //veiculos = await veiculoService.GetVeiculos();
-            veiculoService1 = ScopedServices.GetRequiredService<IVeiculoService>();
-            veiculos = await veiculoService1.GetVeiculos();
+            veiculos = await veiculoService.GetVeiculos();
+            // veiculoService1 = ScopedServices.GetRequiredService<IVeiculoService>();
+            // veiculos = await veiculoService1.GetVeiculos();
         }
         catch (Exception ex)
         {

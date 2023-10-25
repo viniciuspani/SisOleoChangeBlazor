@@ -1,0 +1,87 @@
+﻿@page "/edittrocaoleo/{trocaOleoId:int}"
+@inject ITrocaOleoService trocaOleoService
+@inject IVeiculoService veiculoService
+@inject IOleoService oleoService
+@inject IFiltroService filtroService
+@inject NavigationManager navigation
+
+<h3>Editar Troca de Oleo</h3>
+
+<Alerta Exibir="Exibir">
+    <h3>@Mensagem</h3>
+</Alerta>
+
+<TrocaOleoForm trocaOleo="trocaOleo" veiculos="veiculos" oleos="oleos" filtros="filtros" OnValidSubmit="EditarTrocaOleo"
+               btnTextSubmit="Salvar" btnTextCancelar="Cancelar" Cancela="Cancel">
+
+</TrocaOleoForm>
+
+@code {
+    private TrocaOleo trocaOleo = new TrocaOleo();
+
+    List<Veiculo> veiculos;
+    List<Oleo> oleos;
+    List<Filtro> filtros;
+
+    bool Exibir = false;
+
+    [Parameter]
+    public string Mensagem { get; set; }
+
+    [Parameter]
+    public int trocaOleoId { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await CarregaVeiculos();
+        await CarregaOleos();
+        await CarregaFiltros();
+        try
+        {
+            trocaOleo = await trocaOleoService.GetTrocaOleo(trocaOleoId);
+        }
+        catch (Exception ex)
+        {
+            Exibir = true;
+            Mensagem = "Erro ao carregar dados da troca de oleo. - " + ex.StackTrace;
+        }
+    }
+
+    private async Task CarregaVeiculos()
+    {
+        veiculos = await veiculoService.GetVeiculos();
+    }
+
+    private async Task CarregaOleos()
+    {
+        oleos = await oleoService.GetOleos();
+    }
+
+    private async Task CarregaFiltros()
+    {
+        filtros = await filtroService.GetFiltros();
+    }
+
+    protected async Task EditarTrocaOleo()
+    {
+        try
+        {
+            bool resultado = await trocaOleoService.EditTrocaOleo(trocaOleoId, trocaOleo);
+            if (resultado)
+            {
+                navigation.NavigateTo("trocaoleo");
+            }
+        }
+        catch (Exception ex)
+        {
+            Exibir = true;
+            Mensagem = "Erro ao atualizar os dados da troca de oleo! \n" + ex.StackTrace.ToString();
+            throw;
+        }
+    }
+
+    void Cancel()
+    {
+        navigation.NavigateTo("trocaoleo");
+    }
+}

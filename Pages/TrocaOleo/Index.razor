@@ -3,6 +3,7 @@
 @inject IVeiculoService veiculoService
 @inject IOleoService oleoService
 @inject IFiltroService filtroService
+@inherits OwningComponentBase
 
 <h3>Troca de Oleos Cadastrados</h3>
 
@@ -48,6 +49,8 @@ else
                     <td>@trocaOleo.QuantidadeOleo</td>
                     <td>@trocaOleo.DataTroca.ToString("dd/MM/yyyy")</td>
                     <td>@trocaOleo.DataProximaTroca?.ToString("dd/MM/yyyy")</td>
+                    <td><a class="btn btn-primary" href="/edittrocaoleo/@trocaOleo.TrocaOleoId">Editar</a> </td>
+                    <td><a class="btn btn-danger" @onclick="@(() => DeletaTrocaOleo(trocaOleo.TrocaOleoId))" style="color:white">Deletar</a> </td>
                 </tr>                
             }
         </tbody>
@@ -98,6 +101,12 @@ else
             Mensagem = "Erro ao carregar dados dos veiculos cadastrados " + ex.StackTrace;
             throw;
         }
+    }
+
+    void DeletaTrocaOleo(int trocaOleoId)
+    {
+        confirma.Exibir();
+        codigoTrocaOleo = trocaOleoId;
     }
 
     async Task DeletaConfirma()
